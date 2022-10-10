@@ -14,6 +14,7 @@ import js.html.MouseEvent;
 import js.html.Node;
 import js.html.TextAreaElement;
 import js.html.TouchEvent;
+import js.html.URL;
 import js.html.ClipboardEvent;
 import js.Browser;
 import lime._internal.graphics.ImageCanvasUtil;
@@ -459,10 +460,15 @@ class HTML5Window
 				return false;
 
 			case "drop":
-				// TODO: Create a formal API that supports HTML5 file objects
 				if (event.dataTransfer != null && event.dataTransfer.files.length > 0)
 				{
-					parent.onDropFile.dispatch(cast event.dataTransfer.files);
+					parent.onDropStart.dispatch();
+					for (file in event.dataTransfer.files)
+					{
+						parent.onDropFile.dispatch(URL.createObjectURL(file));
+					}
+					parent.onDropEnd.dispatch();
+
 					event.preventDefault();
 					return false;
 				}
